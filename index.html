@@ -163,6 +163,7 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
 .modal p{font-size:13px;color:var(--text3);margin-bottom:16px}
 .modal input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:14px;padding:9px 12px;outline:none;margin-bottom:14px;transition:border-color .15s}
 .modal input:focus{border-color:var(--accent)}
+#imp-textarea:focus{border-color:var(--accent)}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end}
 .divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--text3);font-size:12px}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -249,6 +250,31 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
       <button class="btn" onclick="closeModal('modal-auth')">Cancelar</button>
       <button class="btn" onclick="loginEmail()">Entrar</button>
       <button class="btn btn-primary" onclick="registerEmail()">Registrarse</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal importar -->
+<div class="overlay" id="modal-import" onclick="closeModalIf(event,'modal-import')">
+  <div class="modal" style="width:460px">
+    <h3>Importar crate</h3>
+    <p>Pegá el contenido de un archivo <strong>.json</strong> o <strong>.yml</strong>, o subí el archivo directamente.</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn" id="imp-btn-json" onclick="setImportMode('json')" style="flex:1">JSON</button>
+      <button class="btn btn-primary" id="imp-btn-yml" onclick="setImportMode('yml')" style="flex:1">YML</button>
+    </div>
+    <div id="imp-file-row" style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <label style="font-size:12px;color:var(--text3);cursor:pointer;padding:6px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);white-space:nowrap">
+        📂 Subir archivo
+        <input type="file" id="imp-file" accept=".json,.yml,.yaml" style="display:none" onchange="loadImportFile(this)" />
+      </label>
+      <span id="imp-file-name" style="font-size:12px;color:var(--text3)">Ningún archivo elegido</span>
+    </div>
+    <textarea id="imp-textarea" rows="9" placeholder="Pegá el contenido aquí…" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px;outline:none;resize:vertical;margin-bottom:10px;transition:border-color .15s;line-height:1.6"></textarea>
+    <div id="imp-mode-hint" style="font-size:11px;color:var(--text3);margin-bottom:12px"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-import')">Cancelar</button>
+      <button class="btn btn-primary" onclick="doImport()">Importar</button>
     </div>
   </div>
 </div>
@@ -562,8 +588,10 @@ function renderMain() {
       <input class="crate-name-editable" id="cname" value="${(c.name||'').replace(/"/g,'&quot;')}" placeholder="Nombre de la crate" />
     </div>
     <div class="header-actions">
-      <button class="btn" onclick="exportYML()">Exportar .yml</button>
+      <button class="btn" onclick="exportYML()">↓ .yml</button>
       <button class="btn" onclick="copyYML()">Copiar .yml</button>
+      <button class="btn" onclick="exportJSON()">↓ .json</button>
+      <button class="btn" onclick="openImportModal()">↑ Importar</button>
       <button class="btn btn-danger" onclick="deleteCrateById(null,'${c.id}')">Eliminar crate</button>
     </div>
   </div>
@@ -766,6 +794,182 @@ function copyYML() {
   });
 }
 
+// ── EXPORT JSON ──────────────────────────────────
+function exportJSON() {
+  const c = activeCrate();
+  if (!c) return;
+  const data = JSON.stringify(c, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(c.name || 'crate').replace(/\s/g, '_').toLowerCase()}.json`;
+  a.click();
+  toast('JSON descargado ✓', 'ok');
+}
+
+// ── IMPORT MODAL ──────────────────────────────────
+let importMode = 'yml'; // 'json' | 'yml'
+
+function openImportModal() {
+  $('imp-textarea').value = '';
+  $('imp-file-name').textContent = 'Ningún archivo elegido';
+  $('imp-file').value = '';
+  setImportMode('yml');
+  openModal('modal-import');
+}
+
+function setImportMode(mode) {
+  importMode = mode;
+  const hints = {
+    json: 'Formato: JSON exportado por esta app (incluye nombre, color, items, etc.)',
+    yml:  'Formato: bloque "contents:" de ExcellentCrates. Se infiere la categoría por el nombre.'
+  };
+  $('imp-mode-hint').textContent = hints[mode];
+  $('imp-btn-json').className = mode === 'json' ? 'btn btn-primary' : 'btn';
+  $('imp-btn-yml').className  = mode === 'yml'  ? 'btn btn-primary' : 'btn';
+  $('imp-textarea').placeholder = mode === 'json'
+    ? '{\n  "name": "Mi Crate",\n  "items": [...]\n}'
+    : 'contents:\n\n  dinero_1m:\n    weight: 4500\n\n  token_500:\n    weight: 2800';
+}
+
+function loadImportFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  $('imp-file-name').textContent = file.name;
+  // auto-detect mode by extension
+  if (file.name.endsWith('.json')) setImportMode('json');
+  else if (file.name.endsWith('.yml') || file.name.endsWith('.yaml')) setImportMode('yml');
+  const reader = new FileReader();
+  reader.onload = e => { $('imp-textarea').value = e.target.result; };
+  reader.readAsText(file);
+}
+
+function doImport() {
+  const raw = $('imp-textarea').value.trim();
+  if (!raw) { toast('Pegá o cargá contenido primero', 'err'); return; }
+
+  let importedCrates = []; // array de objetos crate
+
+  if (importMode === 'json') {
+    try {
+      const parsed = JSON.parse(raw);
+      // puede ser un objeto crate único o un array de crates
+      const arr = Array.isArray(parsed) ? parsed : [parsed];
+      for (const obj of arr) {
+        if (!obj || typeof obj !== 'object') continue;
+        const items = Array.isArray(obj.items) ? obj.items.map(it => ({
+          id: uid(),
+          cat: it.cat || 'OTRO',
+          name: it.name || 'Item',
+          weight: Number(it.weight) || 0
+        })) : [];
+        importedCrates.push({
+          id: uid(),
+          name: obj.name || 'Crate importada',
+          color: obj.color || PALETTE[crates.length % PALETTE.length],
+          simTarget: Number(obj.simTarget) || 0.003,
+          createdAt: Date.now(),
+          items
+        });
+      }
+    } catch(e) {
+      toast('JSON inválido: ' + e.message, 'err'); return;
+    }
+
+  } else {
+    // Parsear YML (formato ExcellentCrates: contents:\n  key:\n    weight: N)
+    try {
+      const newCrate = parseImportYML(raw);
+      if (!newCrate) { toast('No se encontró "contents:" en el YML', 'err'); return; }
+      importedCrates.push(newCrate);
+    } catch(e) {
+      toast('Error al parsear YML: ' + e.message, 'err'); return;
+    }
+  }
+
+  if (importedCrates.length === 0) { toast('No se encontraron crates válidas', 'err'); return; }
+
+  // Agregar al estado
+  importedCrates.forEach(nc => {
+    crates.push(nc);
+    saveCrate(nc);
+  });
+  if (!currentUser) saveLocal();
+  activeId = importedCrates[0].id;
+  closeModal('modal-import');
+  renderSidebar();
+  renderMain();
+  const total = importedCrates.reduce((s, c) => s + (c.items?.length || 0), 0);
+  toast(`${importedCrates.length > 1 ? importedCrates.length + ' crates' : `"${importedCrates[0].name}"`} importada${importedCrates.length>1?'s':''} — ${total} items ✓`, 'ok');
+}
+
+function parseImportYML(raw) {
+  // Encuentra bloque contents:
+  const lines = raw.split('\n');
+  let inContents = false;
+  const items = [];
+  let currentKey = null;
+  let crateName = null;
+
+  // intentar obtener nombre del comentario # NombreCrate — ExcellentCrates
+  const commentMatch = raw.match(/^#\s*(.+?)\s*(?:—|-|–)?\s*(?:ExcellentCrates)?/m);
+  if (commentMatch) {
+    const candidate = commentMatch[1].trim();
+    if (!candidate.startsWith('Peso') && !candidate.startsWith('Items') && !candidate.startsWith('Weight')) {
+      crateName = candidate;
+    }
+  }
+
+  for (let line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+
+    if (!inContents) {
+      if (trimmed === 'contents:') { inContents = true; }
+      continue;
+    }
+
+    // Detectar item key (2 spaces indent, ends with :)
+    const keyMatch = line.match(/^  ([^\s#:][^:]*):?\s*(?:#.*)?$/);
+    if (keyMatch && !line.match(/^\s{4}/)) {
+      currentKey = keyMatch[1].trim().replace(/_/g, ' ');
+      // Intentar inferir categoría por palabras clave en el nombre
+      const cat = inferCat(currentKey);
+      items.push({ id: uid(), cat, name: currentKey, weight: 0 });
+      continue;
+    }
+
+    // Detectar weight: N (4 spaces indent)
+    const weightMatch = line.match(/^\s{4}weight:\s*(\d+(?:\.\d+)?)/);
+    if (weightMatch && items.length > 0) {
+      items[items.length - 1].weight = Number(weightMatch[1]);
+    }
+  }
+
+  if (items.length === 0) return null;
+  return {
+    id: uid(),
+    name: crateName || 'Crate importada',
+    color: PALETTE[crates.length % PALETTE.length],
+    simTarget: 0.003,
+    createdAt: Date.now(),
+    items
+  };
+}
+
+function inferCat(name) {
+  const n = name.toLowerCase();
+  if (/diner|pesos|\$|money|coin/.test(n))         return 'DINERO';
+  if (/token|point|punto/.test(n))                 return 'TOKENS';
+  if (/llave|key/.test(n))                         return 'LLAVES';
+  if (/armadura|casco|pecho|pechera|botas|pantal|armor|helmet|chest|legg|boot/.test(n)) return 'ARMADURA';
+  if (/espada|hacha|arco|trident|sword|axe|bow|weapon|arma/.test(n)) return 'ARMAS';
+  if (/skin|cosmetic/.test(n))                     return 'SKINS';
+  if (/tag|pet|mascota/.test(n))                   return 'TAGS/PETS';
+  if (/extra|bonus|especial|emoji|color|chat|mochil|bag/.test(n)) return 'EXTRAS';
+  return 'OTRO';
+}
+
 // ── MODALS ──────────────────────────────────────
 function openModal(id)  { $(id).classList.add('vis'); }
 function closeModal(id) { $(id).classList.remove('vis'); }
@@ -794,6 +998,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeModal('modal-new');
     closeModal('modal-auth');
+    closeModal('modal-import');
   }
 });
 $('modal-name-input').addEventListener('keydown', e => { if(e.key==='Enter') createCrateFromModal(); });
@@ -803,7 +1008,8 @@ Object.assign(window, {
   handleAuth, loginGoogle, loginEmail, registerEmail,
   openNewCrateModal, closeModal, closeModalIf, createCrateFromModal,
   deleteCrateById, deleteItem, addItem, updateField, updateSimTarget,
-  exportYML, copyYML, openAuthModal
+  exportYML, copyYML, exportJSON, openImportModal, setImportMode, loadImportFile, doImport,
+  openAuthModal
 });
 </script>
 </body>
