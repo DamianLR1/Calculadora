@@ -32,17 +32,12 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;overflow:hidden}
-
-/* ── SHELL ── */
 .shell{display:flex;height:100vh}
-
-/* ── SIDEBAR ── */
 .sidebar{width:230px;min-width:230px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .sb-head{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
 .sb-logo{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
 .sb-title{font-size:15px;font-weight:600}
 .sb-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-b);margin-left:6px;vertical-align:middle}
-
 .auth-area{padding:10px 12px;border-bottom:1px solid var(--border)}
 .auth-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3)}
 .auth-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
@@ -53,7 +48,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .auth-btn{font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:5px;background:none;color:var(--text2);cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s}
 .auth-btn:hover{background:var(--bg3);color:var(--text)}
 .auth-btn.danger:hover{background:var(--red-bg);border-color:rgba(255,92,106,.3);color:var(--red)}
-
 .sb-section{padding:12px 16px 4px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
 .crate-list{flex:1;overflow-y:auto;padding:4px 8px}
 .crate-item{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:var(--r);cursor:pointer;color:var(--text2);font-size:13px;transition:background .12s,color .12s;margin-bottom:1px;border:1px solid transparent}
@@ -67,8 +61,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .btn-new-crate{margin:8px;padding:8px;border:1px dashed var(--border2);border-radius:var(--r);background:none;color:var(--text3);font-size:12px;cursor:pointer;text-align:center;transition:all .15s;font-family:var(--font)}
 .btn-new-crate:hover{border-color:var(--accent-b);color:var(--accent);background:var(--accent-bg)}
 .sb-foot{padding:10px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
-
-/* ── MAIN ── */
 .main{flex:1;overflow-y:auto;padding:28px 32px}
 .main-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
 .crate-name-editable{font-size:22px;font-weight:600;color:var(--text);background:none;border:none;border-bottom:2px solid transparent;outline:none;padding:2px 0;transition:border-color .15s;font-family:var(--font);min-width:180px}
@@ -81,16 +73,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .btn-primary:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-danger{background:var(--red-bg);border-color:rgba(255,92,106,.3);color:var(--red)}
 .btn-danger:hover{background:var(--red);color:#fff}
-
-/* ── STATS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px}
 .stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
 .stat-value{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
 .stat-value.ok{color:var(--green)}
 .stat-value.sm{font-size:13px;margin-top:4px}
-
-/* ── TABLE ── */
 .section-label{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
 .table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
 table{width:100%;border-collapse:collapse}
@@ -114,16 +102,12 @@ tbody tr:hover .del-cell button{opacity:1}
 .del-cell button:hover{color:var(--red)}
 tfoot td{padding:10px 14px;font-weight:700;font-size:13px;background:var(--bg3);border-top:1px solid var(--border);color:var(--text2)}
 tfoot td.mono{font-family:var(--mono);color:var(--text)}
-
-/* ── ADD FORM ── */
 .add-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:24px}
 .add-form select,.add-form input[type=text],.add-form input[type=number]{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font);padding:7px 11px;outline:none;transition:border-color .15s}
 .add-form select:focus,.add-form input:focus{border-color:var(--accent)}
 .add-form select{min-width:120px;cursor:pointer}
 .add-form input[type=text]{flex:1;min-width:160px}
 .add-form input[type=number]{width:90px;text-align:right;font-family:var(--mono)}
-
-/* ── SIMULATOR ── */
 .simulator{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 24px;margin-bottom:24px}
 .sim-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .sim-icon{width:28px;height:28px;border-radius:7px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;font-size:15px}
@@ -141,21 +125,15 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
 .sim-rv{font-size:18px;font-weight:600;font-family:var(--mono)}
 .sim-rc.hl .sim-rv{color:var(--accent)}
 .sim-rh{font-size:11px;color:var(--text3);margin-top:3px}
-
-/* ── YML ── */
 .yml-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:28px}
 .yml-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
 .yml-fn{font-size:12px;font-family:var(--mono);color:var(--text3)}
 .yml-pre{font-family:var(--mono);font-size:12px;color:var(--text2);padding:14px 16px;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto;line-height:1.75}
 .yc{color:var(--text3)}.yk{color:#82cfff}.yv{color:var(--green)}.ya{color:var(--amber)}
-
-/* ── EMPTY / NO CRATE ── */
 .no-crate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--text3);padding:40px;text-align:center}
 .no-crate .big{font-size:64px;opacity:.2}
 .no-crate p{font-size:14px}
 .empty-items{text-align:center;padding:32px;color:var(--text3);font-size:13px}
-
-/* ── MODAL ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
 .overlay.vis{opacity:1;pointer-events:all}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rl);padding:24px;width:380px;max-width:95vw}
@@ -163,24 +141,21 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
 .modal p{font-size:13px;color:var(--text3);margin-bottom:16px}
 .modal input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:14px;padding:9px 12px;outline:none;margin-bottom:14px;transition:border-color .15s}
 .modal input:focus{border-color:var(--accent)}
+#imp-textarea:focus{border-color:var(--accent)}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end}
 .divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--text3);font-size:12px}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .google-btn{width:100%;padding:9px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;margin-bottom:12px}
 .google-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
 .google-icon{width:16px;height:16px;flex-shrink:0}
-
-/* ── TOAST ── */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:10px 16px;font-size:13px;color:var(--text);z-index:999;transform:translateY(60px);opacity:0;transition:all .3s}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.ok{border-color:rgba(46,204,138,.4);color:var(--green)}
 .toast.err{border-color:rgba(255,92,106,.4);color:var(--red)}
-
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--border2)}
-
 @media(max-width:700px){
   .sidebar{width:190px;min-width:190px}
   .main{padding:14px}
@@ -199,7 +174,7 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
     <div class="auth-area">
       <div class="auth-status">
         <div class="auth-dot" id="auth-dot"></div>
-        <span class="auth-name" id="auth-name">Sin cuenta</span>
+        <span class="auth-name" id="auth-name">Visitante</span>
         <button class="auth-btn" id="auth-btn" onclick="handleAuth()">Entrar</button>
       </div>
     </div>
@@ -236,7 +211,7 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
 <!-- Modal auth -->
 <div class="overlay" id="modal-auth" onclick="closeModalIf(event,'modal-auth')">
   <div class="modal">
-    <h3>Sincronizar datos</h3>
+    <h3>Identificarse</h3>
     <p>Iniciá sesión para identificarte. Las crates son globales y compartidas con todos.</p>
     <button class="google-btn" onclick="loginGoogle()">
       <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
@@ -253,9 +228,33 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
   </div>
 </div>
 
+<!-- Modal importar -->
+<div class="overlay" id="modal-import" onclick="closeModalIf(event,'modal-import')">
+  <div class="modal" style="width:460px">
+    <h3>Importar crate</h3>
+    <p>Pegá el contenido de un archivo <strong>.json</strong> o <strong>.yml</strong>, o subí el archivo directamente.</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn" id="imp-btn-json" onclick="setImportMode('json')" style="flex:1">JSON</button>
+      <button class="btn btn-primary" id="imp-btn-yml" onclick="setImportMode('yml')" style="flex:1">YML</button>
+    </div>
+    <div id="imp-file-row" style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <label style="font-size:12px;color:var(--text3);cursor:pointer;padding:6px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);white-space:nowrap">
+        📂 Subir archivo
+        <input type="file" id="imp-file" accept=".json,.yml,.yaml" style="display:none" onchange="loadImportFile(this)" />
+      </label>
+      <span id="imp-file-name" style="font-size:12px;color:var(--text3)">Ningún archivo elegido</span>
+    </div>
+    <textarea id="imp-textarea" rows="9" placeholder="Pegá el contenido aquí…" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px;outline:none;resize:vertical;margin-bottom:10px;transition:border-color .15s;line-height:1.6"></textarea>
+    <div id="imp-mode-hint" style="font-size:11px;color:var(--text3);margin-bottom:12px"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-import')">Cancelar</button>
+      <button class="btn btn-primary" onclick="doImport()">Importar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -267,10 +266,6 @@ import {
   onSnapshot, serverTimestamp, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ─────────────────────────────────────────────────────
-// ⚠️  REEMPLAZÁ ESTO CON TU CONFIG DE FIREBASE
-// (ver SETUP.md para instrucciones paso a paso)
-// ─────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyCpAyPEDe6fxY-VmPRzAbygT1-JRpERAgM",
   authDomain: "excellentcrates.firebaseapp.com",
@@ -279,7 +274,6 @@ const firebaseConfig = {
   messagingSenderId: "299588091119",
   appId: "1:299588091119:web:c4c3d7f9687df4dd416f1a"
 };
-// ─────────────────────────────────────────────────────
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -305,7 +299,6 @@ let activeId = null;
 let unsubSnapshot = null;
 let saveTimer = null;
 
-// ── UTILS ──────────────────────────────────────
 const $ = id => document.getElementById(id);
 function toast(msg, type='') {
   const el = $('toast');
@@ -315,11 +308,52 @@ function toast(msg, type='') {
 }
 function totalW(c) { return (c.items||[]).reduce((s,i) => s+(Number(i.weight)||0), 0); }
 function activeCrate() { return crates.find(c => c.id === activeId); }
+function uid() { return crypto.randomUUID(); }
 
-// ── AUTH ───────────────────────────────────────
-// Suscripción global arranca inmediatamente, sin necesitar login
+// ── FIRESTORE GLOBAL ───────────────────────────
+function cratesCol() { return collection(db, 'crates'); }
+
+// Arranca sin login — todos ven las mismas crates
 subscribeToFirestore();
 
+function subscribeToFirestore() {
+  if (unsubSnapshot) unsubSnapshot();
+  const q = query(cratesCol(), orderBy('createdAt'));
+  $('auth-dot').className = 'auth-dot syncing';
+  unsubSnapshot = onSnapshot(q, snap => {
+    $('auth-dot').className = 'auth-dot online';
+    crates = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (crates.length === 0) createDefaultCrate();
+    if (!activeId && crates.length > 0) activeId = crates[0].id;
+    if (activeId && !crates.find(c => c.id === activeId)) activeId = crates[0]?.id || null;
+    renderSidebar();
+    renderMain();
+  }, err => {
+    console.error(err);
+    toast('Error de sincronización', 'err');
+    $('auth-dot').className = 'auth-dot';
+  });
+}
+
+async function saveCrate(crate) {
+  const ref = doc(cratesCol(), crate.id);
+  $('sync-badge').textContent = '…';
+  try {
+    await setDoc(ref, { ...crate, updatedAt: serverTimestamp() });
+    $('sync-badge').textContent = 'global';
+  } catch(e) {
+    toast('Error al guardar: ' + e.message, 'err');
+    $('sync-badge').textContent = 'error';
+  }
+}
+
+async function deleteCrateFS(id) {
+  try {
+    await deleteDoc(doc(cratesCol(), id));
+  } catch(e) { toast('Error al eliminar', 'err'); }
+}
+
+// ── AUTH (opcional) ────────────────────────────
 onAuthStateChanged(auth, user => {
   currentUser = user;
   updateAuthUI();
@@ -336,14 +370,14 @@ function updateAuthUI() {
     name.textContent = currentUser.displayName || currentUser.email || 'Usuario';
     btn.textContent  = 'Salir';
     btn.className    = 'auth-btn danger';
-    badge.textContent = 'online';
+    badge.textContent = 'global';
     badge.style.background = 'rgba(46,204,138,.15)';
     badge.style.color = '#2ecc8a';
     badge.style.borderColor = 'rgba(46,204,138,.4)';
-    foot.textContent = 'Guardado automático en la nube';
+    foot.textContent = 'Datos compartidos globalmente';
   } else {
-    dot.className  = 'auth-dot';
-    name.textContent = 'Sin cuenta';
+    dot.className  = 'auth-dot online';
+    name.textContent = 'Visitante';
     btn.textContent  = 'Entrar';
     btn.className    = 'auth-btn';
     badge.textContent = 'global';
@@ -384,69 +418,14 @@ function registerEmail() {
     .catch(e => toast('Error: ' + e.message, 'err'));
 }
 
-// ── FIRESTORE ──────────────────────────────────
-function cratesCol() { return collection(db, 'crates'); }
-
-function subscribeToFirestore() {
-  if (unsubSnapshot) unsubSnapshot();
-  const q = query(cratesCol(uid), orderBy('createdAt'));
-  $('auth-dot').className = 'auth-dot syncing';
-  unsubSnapshot = onSnapshot(q, snap => {
-    $('auth-dot').className = 'auth-dot online';
-    crates = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    if (!activeId && crates.length > 0) activeId = crates[0].id;
-    if (activeId && !crates.find(c => c.id === activeId)) activeId = crates[0]?.id || null;
-    renderSidebar();
-    renderMain();
-  }, err => {
-    console.error(err);
-    toast('Error de sincronización', 'err');
-    $('auth-dot').className = 'auth-dot';
-  });
-}
-
-async function saveCrate(crate) {
-  const ref = doc(cratesCol(), crate.id);
-  $('sync-badge').textContent = '…';
-  try {
-    await setDoc(ref, { ...crate, updatedAt: serverTimestamp() });
-    $('sync-badge').textContent = 'online';
-  } catch(e) {
-    toast('Error al guardar: ' + e.message, 'err');
-    $('sync-badge').textContent = 'error';
-  }
-}
-
-async function deleteCrateFS(id) {
-  try {
-    await deleteDoc(doc(cratesCol(), id));
-  } catch(e) { toast('Error al eliminar', 'err'); }
-}
-
-// ── LOCAL FALLBACK (sin cuenta) ────────────────
-const LS_KEY = 'ec_crates_v3';
-function saveLocal() { localStorage.setItem(LS_KEY, JSON.stringify(crates)); }
-
-function loadLocalFallback() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) crates = JSON.parse(raw);
-  } catch(e) {}
-  if (!crates || crates.length === 0) {
-    crates = [];
-    const id = crypto.randomUUID();
-    crates.push({
-      id, name: 'San Valentín 2026', color: PALETTE[0], simTarget: 0.003,
-      createdAt: Date.now(),
-      items: defaultItems()
-    });
-    activeId = id;
-    saveLocal();
-  } else {
-    activeId = crates[0]?.id || null;
-  }
-  renderSidebar();
-  renderMain();
+// ── CRATE POR DEFECTO ──────────────────────────
+function createDefaultCrate() {
+  const id = uid();
+  const newCrate = {
+    id, name: 'San Valentín 2026', color: PALETTE[0], simTarget: 0.003,
+    createdAt: Date.now(), items: defaultItems()
+  };
+  saveCrate(newCrate);
 }
 
 function defaultItems() {
@@ -481,8 +460,6 @@ function defaultItems() {
     {id:uid(),cat:'EXTRAS',name:'Emoji/Tag Corazon Creeper',weight:40},
   ];
 }
-
-function uid() { return crypto.randomUUID(); }
 
 // ── DEBOUNCED SAVE ──────────────────────────────
 function debounceSave() {
@@ -533,13 +510,11 @@ function renderMain() {
   const maxW = Math.max(...items.map(i => Number(i.weight)||0), 1);
   const top = items.reduce((a,b) => (Number(b.weight)||0) > (Number(a.weight)||0) ? b : a, {weight:0,name:'—'});
   const topPct = total > 0 ? ((Number(top.weight)/total)*100).toFixed(3) : '0.000';
-
   const simT = Number(c.simTarget) || 0;
   const simIdeal = total > 0 && simT > 0 && simT < 1 ? (total * simT / (1 - simT)) : 0;
   const simNewTotal = total + simIdeal;
   const simReal = simNewTotal > 0 ? (simIdeal / simNewTotal * 100) : 0;
 
-  // Grouped items for YML
   const grouped = {};
   items.forEach(it => { if (!grouped[it.cat]) grouped[it.cat]=[]; grouped[it.cat].push(it); });
   const ymlLines = Object.entries(grouped).map(([cat, its]) =>
@@ -557,8 +532,10 @@ function renderMain() {
       <input class="crate-name-editable" id="cname" value="${(c.name||'').replace(/"/g,'&quot;')}" placeholder="Nombre de la crate" />
     </div>
     <div class="header-actions">
-      <button class="btn" onclick="exportYML()">Exportar .yml</button>
+      <button class="btn" onclick="exportYML()">↓ .yml</button>
       <button class="btn" onclick="copyYML()">Copiar .yml</button>
+      <button class="btn" onclick="exportJSON()">↓ .json</button>
+      <button class="btn" onclick="openImportModal()">↑ Importar</button>
       <button class="btn btn-danger" onclick="deleteCrateById(null,'${c.id}')">Eliminar crate</button>
     </div>
   </div>
@@ -587,18 +564,15 @@ function renderMain() {
           : items.map(it => {
               const p = total > 0 ? (Number(it.weight)/total*100) : 0;
               const bw = Math.round(Number(it.weight)/maxW*100);
-              const ideal = total > 0 && simT > 0 && simT < 1
-                ? (total * simT / (1-simT)).toFixed(1) : '—';
+              const ideal = total > 0 && simT > 0 && simT < 1 ? (total * simT / (1-simT)).toFixed(1) : '—';
               const cc = CAT_COLORS[it.cat] || CAT_COLORS['OTRO'];
-              const col = cc.color;
-              const barCol = col;
               return `<tr data-iid="${it.id}">
                 <td><span class="cat-badge" style="background:${cc.bg};color:${cc.color}">${it.cat}</span></td>
                 <td><input class="cell-input" value="${(it.name||'').replace(/"/g,'&quot;')}" onchange="updateField('${it.id}','name',this.value)" /></td>
                 <td style="text-align:right"><input class="weight-input" type="number" min="0" value="${it.weight}" oninput="updateField('${it.id}','weight',this.value)" /></td>
                 <td>
                   <div class="bar-cell">
-                    <div class="bar-wrap"><div class="bar-fill" style="width:${bw}%;background:${barCol}"></div></div>
+                    <div class="bar-wrap"><div class="bar-fill" style="width:${bw}%;background:${cc.color}"></div></div>
                     <span class="pct-label">${p.toFixed(3)}%</span>
                   </div>
                 </td>
@@ -721,6 +695,7 @@ function deleteCrateById(e, id) {
   toast('Crate eliminada', 'ok');
 }
 
+// ── YML ─────────────────────────────────────────
 function getPlainYML() {
   const c = activeCrate();
   if (!c) return '';
@@ -749,7 +724,7 @@ function exportYML() {
   a.href = URL.createObjectURL(blob);
   a.download = `${(c.name||'crate').replace(/\s/g,'_')}.yml`;
   a.click();
-  toast('Archivo descargado ✓', 'ok');
+  toast('Archivo .yml descargado ✓', 'ok');
 }
 
 function copyYML() {
@@ -758,6 +733,138 @@ function copyYML() {
     const btn = $('copy-btn');
     if (btn) { btn.textContent = '✓ Copiado'; setTimeout(()=>btn.textContent='Copiar',1500); }
   });
+}
+
+// ── EXPORT JSON ──────────────────────────────────
+function exportJSON() {
+  const c = activeCrate();
+  if (!c) return;
+  const blob = new Blob([JSON.stringify(c, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(c.name || 'crate').replace(/\s/g, '_').toLowerCase()}.json`;
+  a.click();
+  toast('JSON descargado ✓', 'ok');
+}
+
+// ── IMPORT ────────────────────────────────────────
+let importMode = 'yml';
+
+function openImportModal() {
+  $('imp-textarea').value = '';
+  $('imp-file-name').textContent = 'Ningún archivo elegido';
+  $('imp-file').value = '';
+  setImportMode('yml');
+  openModal('modal-import');
+}
+
+function setImportMode(mode) {
+  importMode = mode;
+  const hints = {
+    json: 'Formato: JSON exportado por esta app (incluye nombre, color, items, etc.)',
+    yml:  'Formato: bloque "contents:" de ExcellentCrates. Se infiere la categoría por el nombre.'
+  };
+  $('imp-mode-hint').textContent = hints[mode];
+  $('imp-btn-json').className = mode === 'json' ? 'btn btn-primary' : 'btn';
+  $('imp-btn-yml').className  = mode === 'yml'  ? 'btn btn-primary' : 'btn';
+  $('imp-textarea').placeholder = mode === 'json'
+    ? '{\n  "name": "Mi Crate",\n  "items": [...]\n}'
+    : 'contents:\n\n  dinero_1m:\n    weight: 4500\n\n  token_500:\n    weight: 2800';
+}
+
+function loadImportFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  $('imp-file-name').textContent = file.name;
+  if (file.name.endsWith('.json')) setImportMode('json');
+  else if (file.name.endsWith('.yml') || file.name.endsWith('.yaml')) setImportMode('yml');
+  const reader = new FileReader();
+  reader.onload = e => { $('imp-textarea').value = e.target.result; };
+  reader.readAsText(file);
+}
+
+function doImport() {
+  const raw = $('imp-textarea').value.trim();
+  if (!raw) { toast('Pegá o cargá contenido primero', 'err'); return; }
+  let importedCrates = [];
+
+  if (importMode === 'json') {
+    try {
+      const parsed = JSON.parse(raw);
+      const arr = Array.isArray(parsed) ? parsed : [parsed];
+      for (const obj of arr) {
+        if (!obj || typeof obj !== 'object') continue;
+        const items = Array.isArray(obj.items) ? obj.items.map(it => ({
+          id: uid(), cat: it.cat || 'OTRO', name: it.name || 'Item', weight: Number(it.weight) || 0
+        })) : [];
+        importedCrates.push({
+          id: uid(), name: obj.name || 'Crate importada',
+          color: obj.color || PALETTE[crates.length % PALETTE.length],
+          simTarget: Number(obj.simTarget) || 0.003, createdAt: Date.now(), items
+        });
+      }
+    } catch(e) { toast('JSON inválido: ' + e.message, 'err'); return; }
+  } else {
+    try {
+      const nc = parseImportYML(raw);
+      if (!nc) { toast('No se encontró "contents:" en el YML', 'err'); return; }
+      importedCrates.push(nc);
+    } catch(e) { toast('Error al parsear YML: ' + e.message, 'err'); return; }
+  }
+
+  if (importedCrates.length === 0) { toast('No se encontraron crates válidas', 'err'); return; }
+  importedCrates.forEach(nc => { crates.push(nc); saveCrate(nc); });
+  activeId = importedCrates[0].id;
+  closeModal('modal-import');
+  renderSidebar();
+  renderMain();
+  const totalItems = importedCrates.reduce((s, c) => s + (c.items?.length || 0), 0);
+  toast(`"${importedCrates[0].name}" importada — ${totalItems} items ✓`, 'ok');
+}
+
+function parseImportYML(raw) {
+  const lines = raw.split('\n');
+  let inContents = false;
+  const items = [];
+  let crateName = null;
+  const cm = raw.match(/^#\s*(.+?)\s*(?:—|-|–)?\s*(?:ExcellentCrates)?/m);
+  if (cm) {
+    const candidate = cm[1].trim();
+    if (!candidate.startsWith('Peso') && !candidate.startsWith('Items') && !candidate.startsWith('Weight'))
+      crateName = candidate;
+  }
+  for (let line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    if (!inContents) { if (trimmed === 'contents:') inContents = true; continue; }
+    const keyMatch = line.match(/^  ([^\s#:][^:]*):?\s*(?:#.*)?$/);
+    if (keyMatch && !line.match(/^\s{4}/)) {
+      const key = keyMatch[1].trim().replace(/_/g, ' ');
+      items.push({ id: uid(), cat: inferCat(key), name: key, weight: 0 });
+      continue;
+    }
+    const wm = line.match(/^\s{4}weight:\s*(\d+(?:\.\d+)?)/);
+    if (wm && items.length > 0) items[items.length - 1].weight = Number(wm[1]);
+  }
+  if (items.length === 0) return null;
+  return {
+    id: uid(), name: crateName || 'Crate importada',
+    color: PALETTE[crates.length % PALETTE.length],
+    simTarget: 0.003, createdAt: Date.now(), items
+  };
+}
+
+function inferCat(name) {
+  const n = name.toLowerCase();
+  if (/diner|pesos|\$|money|coin/.test(n))         return 'DINERO';
+  if (/token|point|punto/.test(n))                 return 'TOKENS';
+  if (/llave|key/.test(n))                         return 'LLAVES';
+  if (/armadura|casco|pecho|pechera|botas|pantal|armor|helmet|chest|legg|boot/.test(n)) return 'ARMADURA';
+  if (/espada|hacha|arco|trident|sword|axe|bow|weapon|arma/.test(n)) return 'ARMAS';
+  if (/skin|cosmetic/.test(n))                     return 'SKINS';
+  if (/tag|pet|mascota/.test(n))                   return 'TAGS/PETS';
+  if (/extra|bonus|especial|emoji|color|chat|mochil|bag/.test(n)) return 'EXTRAS';
+  return 'OTRO';
 }
 
 // ── MODALS ──────────────────────────────────────
@@ -782,21 +889,21 @@ function createCrateFromModal() {
   toast(`Crate "${name}" creada ✓`, 'ok');
 }
 
-// keyboard shortcuts
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeModal('modal-new');
     closeModal('modal-auth');
+    closeModal('modal-import');
   }
 });
 $('modal-name-input').addEventListener('keydown', e => { if(e.key==='Enter') createCrateFromModal(); });
 
-// Expose to inline handlers
 Object.assign(window, {
   handleAuth, loginGoogle, loginEmail, registerEmail,
   openNewCrateModal, closeModal, closeModalIf, createCrateFromModal,
   deleteCrateById, deleteItem, addItem, updateField, updateSimTarget,
-  exportYML, copyYML, openAuthModal
+  exportYML, copyYML, exportJSON, openImportModal, setImportMode, loadImportFile, doImport,
+  openAuthModal
 });
 </script>
 </body>
