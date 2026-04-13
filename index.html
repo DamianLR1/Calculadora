@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ExcellentCrates — Calculadora</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>" />
+<style>
+:root {
+  --bg:     #0f1117;
+  --bg2:    #181c27;
+  --bg3:    #1f2438;
+  --bg4:    #252b42;
+  --border: rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --text:   #e8eaf0;
+  --text2:  #8b91a8;
+  --text3:  #555d78;
+  --accent: #4f7bff;
+  --accent-bg:  rgba(79,123,255,0.12);
+  --accent-b:   rgba(79,123,255,0.35);
+  --green:  #2ecc8a;
+  --green-bg:   rgba(46,204,138,0.10);
+  --red:    #ff5c6a;
+  --red-bg: rgba(255,92,106,0.10);
+  --amber:  #f5a623;
+  --amber-bg:   rgba(245,166,35,0.10);
+  --r:  8px;
+  --rl: 12px;
+  --font: 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Cascadia Code','Fira Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;overflow:hidden}
+
+/* ── SHELL ── */
+.shell{display:flex;height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:230px;min-width:230px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sb-head{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+.sb-logo{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.sb-title{font-size:15px;font-weight:600}
+.sb-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-b);margin-left:6px;vertical-align:middle}
+
+.auth-area{padding:10px 12px;border-bottom:1px solid var(--border)}
+.auth-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3)}
+.auth-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
+.auth-dot.online{background:var(--green)}
+.auth-dot.syncing{background:var(--amber);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.auth-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-btn{font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:5px;background:none;color:var(--text2);cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s}
+.auth-btn:hover{background:var(--bg3);color:var(--text)}
+.auth-btn.danger:hover{background:var(--red-bg);border-color:rgba(255,92,106,.3);color:var(--red)}
+
+.sb-section{padding:12px 16px 4px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.crate-list{flex:1;overflow-y:auto;padding:4px 8px}
+.crate-item{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:var(--r);cursor:pointer;color:var(--text2);font-size:13px;transition:background .12s,color .12s;margin-bottom:1px;border:1px solid transparent}
+.crate-item:hover{background:var(--bg3);color:var(--text)}
+.crate-item.active{background:var(--accent-bg);color:var(--text);border-color:var(--accent-b)}
+.crate-icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.crate-iname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crate-del{opacity:0;cursor:pointer;font-size:15px;color:var(--text3);line-height:1;padding:0 2px;border:none;background:none;transition:opacity .12s,color .12s}
+.crate-item:hover .crate-del{opacity:1}
+.crate-del:hover{color:var(--red)}
+.btn-new-crate{margin:8px;padding:8px;border:1px dashed var(--border2);border-radius:var(--r);background:none;color:var(--text3);font-size:12px;cursor:pointer;text-align:center;transition:all .15s;font-family:var(--font)}
+.btn-new-crate:hover{border-color:var(--accent-b);color:var(--accent);background:var(--accent-bg)}
+.sb-foot{padding:10px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;padding:28px 32px}
+.main-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+.crate-name-editable{font-size:22px;font-weight:600;color:var(--text);background:none;border:none;border-bottom:2px solid transparent;outline:none;padding:2px 0;transition:border-color .15s;font-family:var(--font);min-width:180px}
+.crate-name-editable:focus{border-bottom-color:var(--accent)}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:7px 14px;border-radius:var(--r);font-size:13px;font-family:var(--font);cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--bg4);color:var(--text)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--accent-bg);border-color:var(--accent-b);color:var(--accent)}
+.btn-primary:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-danger{background:var(--red-bg);border-color:rgba(255,92,106,.3);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat-value.ok{color:var(--green)}
+.stat-value.sm{font-size:13px;margin-top:4px}
+
+/* ── TABLE ── */
+.section-label{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:14px}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:10px 14px;text-align:left;background:var(--bg3);border-bottom:1px solid var(--border);white-space:nowrap}
+thead th.right{text-align:right}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg3)}
+tbody td{padding:7px 14px;vertical-align:middle}
+.cat-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.cell-input{background:none;border:none;color:var(--text);font-size:13px;font-family:var(--font);outline:none;width:100%;padding:0}
+.weight-input{background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:13px;font-family:var(--mono);outline:none;padding:4px 8px;text-align:right;width:80px;transition:border-color .15s}
+.weight-input:focus{border-color:var(--accent)}
+.bar-cell{display:flex;align-items:center;gap:8px}
+.bar-wrap{flex:1;min-width:70px;max-width:160px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width .25s}
+.pct-label{font-size:12px;font-family:var(--mono);color:var(--text2);min-width:58px;text-align:right}
+.ideal-label{font-size:11px;font-family:var(--mono);color:var(--text3);min-width:46px;text-align:right}
+.del-cell button{border:none;background:none;cursor:pointer;color:var(--text3);font-size:16px;line-height:1;padding:0 4px;opacity:0;transition:opacity .15s,color .15s}
+tbody tr:hover .del-cell button{opacity:1}
+.del-cell button:hover{color:var(--red)}
+tfoot td{padding:10px 14px;font-weight:700;font-size:13px;background:var(--bg3);border-top:1px solid var(--border);color:var(--text2)}
+tfoot td.mono{font-family:var(--mono);color:var(--text)}
+
+/* ── ADD FORM ── */
+.add-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:24px}
+.add-form select,.add-form input[type=text],.add-form input[type=number]{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-size:13px;font-family:var(--font);padding:7px 11px;outline:none;transition:border-color .15s}
+.add-form select:focus,.add-form input:focus{border-color:var(--accent)}
+.add-form select{min-width:120px;cursor:pointer}
+.add-form input[type=text]{flex:1;min-width:160px}
+.add-form input[type=number]{width:90px;text-align:right;font-family:var(--mono)}
+
+/* ── SIMULATOR ── */
+.simulator{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 24px;margin-bottom:24px}
+.sim-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sim-icon{width:28px;height:28px;border-radius:7px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;font-size:15px}
+.sim-ttl{font-size:14px;font-weight:600}
+.sim-sub{font-size:12px;color:var(--text3)}
+.sim-body{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.sim-ig{display:flex;flex-direction:column;gap:4px}
+.sim-il{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.sim-pct{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:15px;padding:8px 12px;outline:none;width:120px;text-align:center;transition:border-color .15s}
+.sim-pct:focus{border-color:var(--amber)}
+.sim-results{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.sim-rc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;min-width:120px}
+.sim-rc.hl{background:var(--accent-bg);border-color:var(--accent-b)}
+.sim-rl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px}
+.sim-rv{font-size:18px;font-weight:600;font-family:var(--mono)}
+.sim-rc.hl .sim-rv{color:var(--accent)}
+.sim-rh{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ── YML ── */
+.yml-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:28px}
+.yml-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.yml-fn{font-size:12px;font-family:var(--mono);color:var(--text3)}
+.yml-pre{font-family:var(--mono);font-size:12px;color:var(--text2);padding:14px 16px;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto;line-height:1.75}
+.yc{color:var(--text3)}.yk{color:#82cfff}.yv{color:var(--green)}.ya{color:var(--amber)}
+
+/* ── EMPTY / NO CRATE ── */
+.no-crate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--text3);padding:40px;text-align:center}
+.no-crate .big{font-size:64px;opacity:.2}
+.no-crate p{font-size:14px}
+.empty-items{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.vis{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rl);padding:24px;width:380px;max-width:95vw}
+.modal h3{font-size:16px;margin-bottom:6px}
+.modal p{font-size:13px;color:var(--text3);margin-bottom:16px}
+.modal input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:14px;padding:9px 12px;outline:none;margin-bottom:14px;transition:border-color .15s}
+.modal input:focus{border-color:var(--accent)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--text3);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.google-btn{width:100%;padding:9px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;margin-bottom:12px}
+.google-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.google-icon{width:16px;height:16px;flex-shrink:0}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:10px 16px;font-size:13px;color:var(--text);z-index:999;transform:translateY(60px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:rgba(46,204,138,.4);color:var(--green)}
+.toast.err{border-color:rgba(255,92,106,.4);color:var(--red)}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+
+@media(max-width:700px){
+  .sidebar{width:190px;min-width:190px}
+  .main{padding:14px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">ExcellentCrates</div>
+      <div class="sb-title">Calculadora <span class="sb-badge" id="sync-badge">offline</span></div>
+    </div>
+    <div class="auth-area">
+      <div class="auth-status">
+        <div class="auth-dot" id="auth-dot"></div>
+        <span class="auth-name" id="auth-name">Sin cuenta</span>
+        <button class="auth-btn" id="auth-btn" onclick="handleAuth()">Entrar</button>
+      </div>
+    </div>
+    <div class="sb-section">Mis Crates</div>
+    <div class="crate-list" id="crate-list">
+      <div style="padding:12px;font-size:12px;color:var(--text3)">Cargando…</div>
+    </div>
+    <button class="btn-new-crate" onclick="openNewCrateModal()">+ Nueva crate</button>
+    <div class="sb-foot" id="sb-foot">Iniciá sesión para sincronizar</div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="no-crate" id="no-crate">
+      <div class="big">📦</div>
+      <p>Seleccioná o creá una crate<br>desde el panel izquierdo</p>
+      <button class="btn btn-primary" onclick="openNewCrateModal()">+ Nueva crate</button>
+    </div>
+  </main>
+</div>
+
+<!-- Modal nueva crate -->
+<div class="overlay" id="modal-new" onclick="closeModalIf(event,'modal-new')">
+  <div class="modal">
+    <h3>Nueva crate</h3>
+    <p>Ingresá el nombre de la crate</p>
+    <input type="text" id="modal-name-input" placeholder="Ej: VIP Crate, Halloween 2025…" />
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-new')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createCrateFromModal()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal auth -->
+<div class="overlay" id="modal-auth" onclick="closeModalIf(event,'modal-auth')">
+  <div class="modal">
+    <h3>Sincronizar datos</h3>
+    <p>Iniciá sesión para guardar tus crates en la nube y acceder desde cualquier dispositivo.</p>
+    <button class="google-btn" onclick="loginGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continuar con Google
+    </button>
+    <div class="divider">o</div>
+    <input type="email" id="auth-email" placeholder="tu@email.com" />
+    <input type="password" id="auth-password" placeholder="Contraseña (mín. 6 caracteres)" />
+    <div class="modal-actions" style="margin-top:4px">
+      <button class="btn" onclick="closeModal('modal-auth')">Cancelar</button>
+      <button class="btn" onclick="loginEmail()">Entrar</button>
+      <button class="btn btn-primary" onclick="registerEmail()">Registrarse</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, collection, doc, setDoc, deleteDoc,
+  onSnapshot, serverTimestamp, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ─────────────────────────────────────────────────────
+// ⚠️  REEMPLAZÁ ESTO CON TU CONFIG DE FIREBASE
+// (ver SETUP.md para instrucciones paso a paso)
+// ─────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyCpAyPEDe6fxY-VmPRzAbygT1-JRpERAgM",
+  authDomain: "excellentcrates.firebaseapp.com",
+  projectId: "excellentcrates",
+  storageBucket: "excellentcrates.firebasestorage.app",
+  messagingSenderId: "299588091119",
+  appId: "1:299588091119:web:c4c3d7f9687df4dd416f1a"
+};
+// ─────────────────────────────────────────────────────
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const CATS = ['DINERO','TOKENS','LLAVES','ARMADURA','ARMAS','SKINS','TAGS/PETS','EXTRAS','OTRO'];
+const CAT_COLORS = {
+  'DINERO':   {bg:'rgba(245,166,35,.15)',  color:'#f5a623'},
+  'TOKENS':   {bg:'rgba(79,123,255,.15)',  color:'#4f7bff'},
+  'LLAVES':   {bg:'rgba(46,204,138,.15)',  color:'#2ecc8a'},
+  'ARMADURA': {bg:'rgba(156,93,255,.15)',  color:'#9c5dff'},
+  'ARMAS':    {bg:'rgba(255,92,106,.15)',  color:'#ff5c6a'},
+  'SKINS':    {bg:'rgba(255,160,50,.15)',  color:'#ffa032'},
+  'TAGS/PETS':{bg:'rgba(50,205,220,.15)', color:'#32cddc'},
+  'EXTRAS':   {bg:'rgba(180,180,180,.12)',color:'#aaa'},
+  'OTRO':     {bg:'rgba(100,100,100,.15)',color:'#888'},
+};
+const PALETTE = ['#4f7bff','#2ecc8a','#f5a623','#ff5c6a','#9c5dff','#ffa032','#32cddc','#ff8c5a'];
+
+let currentUser = null;
+let crates = [];
+let activeId = null;
+let unsubSnapshot = null;
+let saveTimer = null;
+
+// ── UTILS ──────────────────────────────────────
+const $ = id => document.getElementById(id);
+function toast(msg, type='') {
+  const el = $('toast');
+  el.textContent = msg; el.className = 'toast show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = 'toast', 2800);
+}
+function totalW(c) { return (c.items||[]).reduce((s,i) => s+(Number(i.weight)||0), 0); }
+function activeCrate() { return crates.find(c => c.id === activeId); }
+
+// ── AUTH ───────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  updateAuthUI();
+  if (user) {
+    subscribeToFirestore(user.uid);
+  } else {
+    if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
+    loadLocalFallback();
+  }
+});
+
+function updateAuthUI() {
+  const dot  = $('auth-dot');
+  const name = $('auth-name');
+  const btn  = $('auth-btn');
+  const badge= $('sync-badge');
+  const foot = $('sb-foot');
+  if (currentUser) {
+    dot.className  = 'auth-dot online';
+    name.textContent = currentUser.displayName || currentUser.email || 'Usuario';
+    btn.textContent  = 'Salir';
+    btn.className    = 'auth-btn danger';
+    badge.textContent = 'online';
+    badge.style.background = 'rgba(46,204,138,.15)';
+    badge.style.color = '#2ecc8a';
+    badge.style.borderColor = 'rgba(46,204,138,.4)';
+    foot.textContent = 'Guardado automático en la nube';
+  } else {
+    dot.className  = 'auth-dot';
+    name.textContent = 'Sin cuenta';
+    btn.textContent  = 'Entrar';
+    btn.className    = 'auth-btn';
+    badge.textContent = 'local';
+    badge.style.background = '';
+    badge.style.color = '';
+    badge.style.borderColor = '';
+    foot.textContent = 'Guardado local (sin cuenta)';
+  }
+}
+
+function handleAuth() {
+  if (currentUser) {
+    if (confirm('¿Cerrar sesión?')) signOut(auth);
+  } else {
+    openModal('modal-auth');
+  }
+}
+
+function loginGoogle() {
+  signInWithPopup(auth, new GoogleAuthProvider())
+    .then(() => { closeModal('modal-auth'); toast('Sesión iniciada ✓', 'ok'); })
+    .catch(e => toast('Error: ' + e.message, 'err'));
+}
+
+function loginEmail() {
+  const email = $('auth-email').value.trim();
+  const pass  = $('auth-password').value;
+  signInWithEmailAndPassword(auth, email, pass)
+    .then(() => { closeModal('modal-auth'); toast('Sesión iniciada ✓', 'ok'); })
+    .catch(e => toast('Error: ' + e.message, 'err'));
+}
+
+function registerEmail() {
+  const email = $('auth-email').value.trim();
+  const pass  = $('auth-password').value;
+  createUserWithEmailAndPassword(auth, email, pass)
+    .then(() => { closeModal('modal-auth'); toast('Cuenta creada ✓', 'ok'); })
+    .catch(e => toast('Error: ' + e.message, 'err'));
+}
+
+// ── FIRESTORE ──────────────────────────────────
+function cratesCol(uid) { return collection(db, 'users', uid, 'crates'); }
+
+function subscribeToFirestore(uid) {
+  if (unsubSnapshot) unsubSnapshot();
+  const q = query(cratesCol(uid), orderBy('createdAt'));
+  $('auth-dot').className = 'auth-dot syncing';
+  unsubSnapshot = onSnapshot(q, snap => {
+    $('auth-dot').className = 'auth-dot online';
+    crates = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!activeId && crates.length > 0) activeId = crates[0].id;
+    if (activeId && !crates.find(c => c.id === activeId)) activeId = crates[0]?.id || null;
+    renderSidebar();
+    renderMain();
+  }, err => {
+    console.error(err);
+    toast('Error de sincronización', 'err');
+    $('auth-dot').className = 'auth-dot';
+  });
+}
+
+async function saveCrate(crate) {
+  if (!currentUser) { saveLocal(); return; }
+  const ref = doc(cratesCol(currentUser.uid), crate.id);
+  $('sync-badge').textContent = '…';
+  try {
+    await setDoc(ref, { ...crate, updatedAt: serverTimestamp() });
+    $('sync-badge').textContent = 'online';
+  } catch(e) {
+    toast('Error al guardar: ' + e.message, 'err');
+    $('sync-badge').textContent = 'error';
+  }
+}
+
+async function deleteCrateFS(id) {
+  if (!currentUser) { saveLocal(); return; }
+  try {
+    await deleteDoc(doc(cratesCol(currentUser.uid), id));
+  } catch(e) { toast('Error al eliminar', 'err'); }
+}
+
+// ── LOCAL FALLBACK (sin cuenta) ────────────────
+const LS_KEY = 'ec_crates_v3';
+function saveLocal() { localStorage.setItem(LS_KEY, JSON.stringify(crates)); }
+
+function loadLocalFallback() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) crates = JSON.parse(raw);
+  } catch(e) {}
+  if (!crates || crates.length === 0) {
+    crates = [];
+    const id = crypto.randomUUID();
+    crates.push({
+      id, name: 'San Valentín 2026', color: PALETTE[0], simTarget: 0.003,
+      createdAt: Date.now(),
+      items: defaultItems()
+    });
+    activeId = id;
+    saveLocal();
+  } else {
+    activeId = crates[0]?.id || null;
+  }
+  renderSidebar();
+  renderMain();
+}
+
+function defaultItems() {
+  return [
+    {id:uid(),cat:'DINERO',name:'Dinero 1M$',weight:4500},
+    {id:uid(),cat:'DINERO',name:'Dinero 2.5M$',weight:800},
+    {id:uid(),cat:'DINERO',name:'Dinero 5M$',weight:300},
+    {id:uid(),cat:'DINERO',name:'Dinero 10M$',weight:150},
+    {id:uid(),cat:'TOKENS',name:'500 Tokens',weight:2800},
+    {id:uid(),cat:'TOKENS',name:'1.500 Tokens',weight:700},
+    {id:uid(),cat:'TOKENS',name:'5.000 Tokens',weight:250},
+    {id:uid(),cat:'LLAVES',name:'Llave SV x1',weight:150},
+    {id:uid(),cat:'LLAVES',name:'Llave SV x2',weight:100},
+    {id:uid(),cat:'LLAVES',name:'Llave SV x3',weight:50},
+    {id:uid(),cat:'ARMADURA',name:'Botas de Cupido',weight:50},
+    {id:uid(),cat:'ARMADURA',name:'Pantalones de Cupido',weight:50},
+    {id:uid(),cat:'ARMADURA',name:'Pechera de Cupido',weight:50},
+    {id:uid(),cat:'ARMADURA',name:'Casco de Cupido',weight:50},
+    {id:uid(),cat:'ARMAS',name:'Espada Amor Inmortal',weight:40},
+    {id:uid(),cat:'SKINS',name:'Skin Amor Inmortal (Espada)',weight:30},
+    {id:uid(),cat:'SKINS',name:'Skin Amor Inmortal (Armor)',weight:40},
+    {id:uid(),cat:'SKINS',name:'Skin Amor Inmortal (Pico)',weight:40},
+    {id:uid(),cat:'SKINS',name:'Skin VAMPIRE',weight:30},
+    {id:uid(),cat:'SKINS',name:'Skin Nitro',weight:40},
+    {id:uid(),cat:'TAGS/PETS',name:'Mega Tag',weight:40},
+    {id:uid(),cat:'TAGS/PETS',name:'Pet Corazon Helado',weight:40},
+    {id:uid(),cat:'EXTRAS',name:'Color de Chat SV',weight:40},
+    {id:uid(),cat:'EXTRAS',name:'25K Corazones',weight:40},
+    {id:uid(),cat:'EXTRAS',name:'50K Corazones',weight:40},
+    {id:uid(),cat:'EXTRAS',name:'Mochila del Amor',weight:40},
+    {id:uid(),cat:'EXTRAS',name:'Guerrero Amoroso',weight:40},
+    {id:uid(),cat:'EXTRAS',name:'Emoji/Tag Corazon Creeper',weight:40},
+  ];
+}
+
+function uid() { return crypto.randomUUID(); }
+
+// ── DEBOUNCED SAVE ──────────────────────────────
+function debounceSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const c = activeCrate();
+    if (c) saveCrate(c);
+  }, 800);
+}
+
+// ── RENDER SIDEBAR ──────────────────────────────
+function renderSidebar() {
+  const list = $('crate-list');
+  list.innerHTML = '';
+  if (crates.length === 0) {
+    list.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text3)">No hay crates aún</div>';
+    return;
+  }
+  crates.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'crate-item' + (c.id === activeId ? ' active' : '');
+    const col = c.color || PALETTE[i % PALETTE.length];
+    el.innerHTML = `
+      <div class="crate-icon" style="background:${col}22;color:${col}">${(c.name||'?')[0].toUpperCase()}</div>
+      <span class="crate-iname">${c.name}</span>
+      <button class="crate-del" title="Eliminar" onclick="deleteCrateById(event,'${c.id}')">×</button>
+    `;
+    el.onclick = () => { activeId = c.id; renderSidebar(); renderMain(); };
+    list.appendChild(el);
+  });
+}
+
+// ── RENDER MAIN ─────────────────────────────────
+function renderMain() {
+  const main = $('main');
+  const c = activeCrate();
+  if (!c) {
+    main.innerHTML = '';
+    const nc = document.createElement('div');
+    nc.className = 'no-crate';
+    nc.innerHTML = `<div class="big">📦</div><p>Seleccioná o creá una crate<br>desde el panel izquierdo</p><button class="btn btn-primary" onclick="openNewCrateModal()">+ Nueva crate</button>`;
+    main.appendChild(nc);
+    return;
+  }
+
+  const total = totalW(c);
+  const items = c.items || [];
+  const maxW = Math.max(...items.map(i => Number(i.weight)||0), 1);
+  const top = items.reduce((a,b) => (Number(b.weight)||0) > (Number(a.weight)||0) ? b : a, {weight:0,name:'—'});
+  const topPct = total > 0 ? ((Number(top.weight)/total)*100).toFixed(3) : '0.000';
+
+  const simT = Number(c.simTarget) || 0;
+  const simIdeal = total > 0 && simT > 0 && simT < 1 ? (total * simT / (1 - simT)) : 0;
+  const simNewTotal = total + simIdeal;
+  const simReal = simNewTotal > 0 ? (simIdeal / simNewTotal * 100) : 0;
+
+  // Grouped items for YML
+  const grouped = {};
+  items.forEach(it => { if (!grouped[it.cat]) grouped[it.cat]=[]; grouped[it.cat].push(it); });
+  const ymlLines = Object.entries(grouped).map(([cat, its]) =>
+    `<span class="ya"># ${cat}</span>\n` +
+    its.map(it => {
+      const p = total > 0 ? (Number(it.weight)/total*100).toFixed(3) : '0.000';
+      const k = (it.name||'item').replace(/[^\w\-]/g,'_');
+      return `  <span class="yk">${k}</span>:\n    <span class="yk">weight</span>: <span class="yv">${it.weight}</span>   <span class="yc"># ${p}%</span>`;
+    }).join('\n')
+  ).join('\n\n');
+
+  main.innerHTML = `
+  <div class="main-header">
+    <div>
+      <input class="crate-name-editable" id="cname" value="${(c.name||'').replace(/"/g,'&quot;')}" placeholder="Nombre de la crate" />
+    </div>
+    <div class="header-actions">
+      <button class="btn" onclick="exportYML()">Exportar .yml</button>
+      <button class="btn" onclick="copyYML()">Copiar .yml</button>
+      <button class="btn btn-danger" onclick="deleteCrateById(null,'${c.id}')">Eliminar crate</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Items</div><div class="stat-value">${items.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Peso total</div><div class="stat-value">${total.toLocaleString()}</div></div>
+    <div class="stat-card"><div class="stat-label">Suma %</div><div class="stat-value ok">100.000%</div></div>
+    <div class="stat-card"><div class="stat-label">Item #1</div><div class="stat-value sm">${top.name}</div></div>
+    <div class="stat-card"><div class="stat-label">% más alto</div><div class="stat-value">${topPct}%</div></div>
+  </div>
+
+  <div class="section-label">Items</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Categoría</th><th>Item / Recompensa</th>
+        <th class="right">Peso</th>
+        <th>% Probabilidad</th>
+        <th class="right" title="Peso necesario según el % objetivo del simulador">Peso ideal</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        ${items.length === 0
+          ? `<tr><td colspan="6"><div class="empty-items">No hay items. Agregá el primero abajo ↓</div></td></tr>`
+          : items.map(it => {
+              const p = total > 0 ? (Number(it.weight)/total*100) : 0;
+              const bw = Math.round(Number(it.weight)/maxW*100);
+              const ideal = total > 0 && simT > 0 && simT < 1
+                ? (total * simT / (1-simT)).toFixed(1) : '—';
+              const cc = CAT_COLORS[it.cat] || CAT_COLORS['OTRO'];
+              const col = cc.color;
+              const barCol = col;
+              return `<tr data-iid="${it.id}">
+                <td><span class="cat-badge" style="background:${cc.bg};color:${cc.color}">${it.cat}</span></td>
+                <td><input class="cell-input" value="${(it.name||'').replace(/"/g,'&quot;')}" onchange="updateField('${it.id}','name',this.value)" /></td>
+                <td style="text-align:right"><input class="weight-input" type="number" min="0" value="${it.weight}" oninput="updateField('${it.id}','weight',this.value)" /></td>
+                <td>
+                  <div class="bar-cell">
+                    <div class="bar-wrap"><div class="bar-fill" style="width:${bw}%;background:${barCol}"></div></div>
+                    <span class="pct-label">${p.toFixed(3)}%</span>
+                  </div>
+                </td>
+                <td style="text-align:right"><span class="ideal-label">${ideal}</span></td>
+                <td class="del-cell"><button onclick="deleteItem('${it.id}')" title="Eliminar item">×</button></td>
+              </tr>`;
+            }).join('')
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">TOTAL</td>
+          <td class="mono" style="text-align:right">${total.toLocaleString()}</td>
+          <td class="mono">100.000%</td>
+          <td></td><td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="add-form">
+    <select id="add-cat">${CATS.map(ct=>`<option>${ct}</option>`).join('')}</select>
+    <input type="text" id="add-name" placeholder="Nombre del item" />
+    <input type="number" id="add-weight" placeholder="Peso" min="0" value="100" />
+    <button class="btn btn-primary" onclick="addItem()">+ Agregar item</button>
+  </div>
+
+  <div class="simulator">
+    <div class="sim-head">
+      <div class="sim-icon">⚡</div>
+      <div><div class="sim-ttl">Simulador de peso</div><div class="sim-sub">¿Qué peso necesito para lograr un % determinado?</div></div>
+    </div>
+    <div class="sim-body">
+      <div class="sim-ig">
+        <div class="sim-il">% Objetivo</div>
+        <input class="sim-pct" type="number" step="0.001" min="0" max="99.999" value="${(simT*100).toFixed(3)}" oninput="updateSimTarget(this.value)" />
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">Ej: 0.300 = 0.3%</div>
+      </div>
+      <div class="sim-results">
+        <div class="sim-rc"><div class="sim-rl">Peso total actual</div><div class="sim-rv">${total.toLocaleString()}</div></div>
+        <div class="sim-rc hl"><div class="sim-rl">Peso necesario</div><div class="sim-rv">${simIdeal.toFixed(2)}</div><div class="sim-rh">← copiá al .yml</div></div>
+        <div class="sim-rc"><div class="sim-rl">Nuevo peso total</div><div class="sim-rv">${simNewTotal.toFixed(1)}</div></div>
+        <div class="sim-rc"><div class="sim-rl">% real verificado</div><div class="sim-rv">${simReal.toFixed(5)}%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Vista previa .yml</div>
+  <div class="yml-block">
+    <div class="yml-hdr">
+      <span class="yml-fn">${(c.name||'crate').replace(/\s/g,'_').toLowerCase()}.yml</span>
+      <button class="btn" onclick="copyYML()" style="font-size:11px;padding:4px 10px" id="copy-btn">Copiar</button>
+    </div>
+    <div class="yml-pre" id="yml-pre"><span class="yc"># ${c.name} — ExcellentCrates</span>\n<span class="yc"># Peso total: ${total.toLocaleString()} | Items: ${items.length}</span>\n\n<span class="yk">contents</span>:\n\n${ymlLines}</div>
+  </div>
+  `;
+
+  $('cname').onchange = function() {
+    const c = activeCrate();
+    if (!c) return;
+    c.name = this.value;
+    renderSidebar();
+    debounceSave();
+  };
+}
+
+// ── ACTIONS ─────────────────────────────────────
+function updateField(itemId, field, val) {
+  const c = activeCrate();
+  if (!c) return;
+  const it = (c.items||[]).find(i => i.id === itemId);
+  if (!it) return;
+  it[field] = field === 'weight' ? (Number(val)||0) : val;
+  debounceSave();
+  renderMain();
+}
+
+function deleteItem(itemId) {
+  const c = activeCrate();
+  if (!c) return;
+  c.items = (c.items||[]).filter(i => i.id !== itemId);
+  debounceSave();
+  renderMain();
+}
+
+function addItem() {
+  const name = $('add-name').value.trim();
+  const weight = Number($('add-weight').value) || 0;
+  const cat  = $('add-cat').value;
+  if (!name) { toast('Ingresá el nombre del item', 'err'); return; }
+  const c = activeCrate();
+  if (!c) return;
+  if (!c.items) c.items = [];
+  c.items.push({ id: uid(), cat, name, weight });
+  debounceSave();
+  $('add-name').value = '';
+  $('add-weight').value = '100';
+  renderMain();
+  toast('Item agregado ✓', 'ok');
+}
+
+function updateSimTarget(val) {
+  const c = activeCrate();
+  if (!c) return;
+  c.simTarget = (Number(val)||0) / 100;
+  debounceSave();
+  renderMain();
+}
+
+function deleteCrateById(e, id) {
+  if (e) e.stopPropagation();
+  const c = crates.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`¿Eliminás la crate "${c.name}"?`)) return;
+  crates = crates.filter(x => x.id !== id);
+  if (activeId === id) activeId = crates[0]?.id || null;
+  deleteCrateFS(id);
+  if (!currentUser) saveLocal();
+  renderSidebar();
+  renderMain();
+  toast('Crate eliminada', 'ok');
+}
+
+function getPlainYML() {
+  const c = activeCrate();
+  if (!c) return '';
+  const total = totalW(c);
+  const items = c.items || [];
+  const grouped = {};
+  items.forEach(it => { if (!grouped[it.cat]) grouped[it.cat]=[]; grouped[it.cat].push(it); });
+  let yml = `# ${c.name} — ExcellentCrates\n# Peso total: ${total.toLocaleString()} | Items: ${items.length}\n\ncontents:\n\n`;
+  Object.entries(grouped).forEach(([cat, its]) => {
+    yml += `# ${cat}\n`;
+    its.forEach(it => {
+      const p = total > 0 ? (Number(it.weight)/total*100).toFixed(3) : '0.000';
+      const k = (it.name||'item').replace(/[^\w\-]/g,'_');
+      yml += `  ${k}:\n    weight: ${it.weight}   # ${p}%\n`;
+    });
+    yml += '\n';
+  });
+  return yml;
+}
+
+function exportYML() {
+  const c = activeCrate();
+  if (!c) return;
+  const blob = new Blob([getPlainYML()], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(c.name||'crate').replace(/\s/g,'_')}.yml`;
+  a.click();
+  toast('Archivo descargado ✓', 'ok');
+}
+
+function copyYML() {
+  navigator.clipboard.writeText(getPlainYML()).then(() => {
+    toast('.yml copiado al portapapeles ✓', 'ok');
+    const btn = $('copy-btn');
+    if (btn) { btn.textContent = '✓ Copiado'; setTimeout(()=>btn.textContent='Copiar',1500); }
+  });
+}
+
+// ── MODALS ──────────────────────────────────────
+function openModal(id)  { $(id).classList.add('vis'); }
+function closeModal(id) { $(id).classList.remove('vis'); }
+function closeModalIf(e, id) { if (e.target === $(id)) closeModal(id); }
+function openNewCrateModal() { $('modal-name-input').value=''; openModal('modal-new'); setTimeout(()=>$('modal-name-input').focus(),80); }
+function openAuthModal() { openModal('modal-auth'); }
+
+function createCrateFromModal() {
+  const name = $('modal-name-input').value.trim();
+  if (!name) { toast('Ingresá un nombre', 'err'); return; }
+  closeModal('modal-new');
+  const id  = uid();
+  const col = PALETTE[crates.length % PALETTE.length];
+  const newCrate = { id, name, color: col, simTarget: 0.003, items: [], createdAt: Date.now() };
+  crates.push(newCrate);
+  activeId = id;
+  saveCrate(newCrate);
+  if (!currentUser) saveLocal();
+  renderSidebar();
+  renderMain();
+  toast(`Crate "${name}" creada ✓`, 'ok');
+}
+
+// keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal('modal-new');
+    closeModal('modal-auth');
+  }
+});
+$('modal-name-input').addEventListener('keydown', e => { if(e.key==='Enter') createCrateFromModal(); });
+
+// Expose to inline handlers
+Object.assign(window, {
+  handleAuth, loginGoogle, loginEmail, registerEmail,
+  openNewCrateModal, closeModal, closeModalIf, createCrateFromModal,
+  deleteCrateById, deleteItem, addItem, updateField, updateSimTarget,
+  exportYML, copyYML, openAuthModal
+});
+</script>
+</body>
+</html>
