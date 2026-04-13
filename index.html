@@ -163,7 +163,6 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
 .modal p{font-size:13px;color:var(--text3);margin-bottom:16px}
 .modal input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:14px;padding:9px 12px;outline:none;margin-bottom:14px;transition:border-color .15s}
 .modal input:focus{border-color:var(--accent)}
-#imp-textarea:focus{border-color:var(--accent)}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end}
 .divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--text3);font-size:12px}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -195,7 +194,7 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
   <aside class="sidebar">
     <div class="sb-head">
       <div class="sb-logo">ExcellentCrates</div>
-      <div class="sb-title">Calculadora <span class="sb-badge" id="sync-badge">offline</span></div>
+      <div class="sb-title">Calculadora <span class="sb-badge" id="sync-badge">global</span></div>
     </div>
     <div class="auth-area">
       <div class="auth-status">
@@ -204,12 +203,12 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
         <button class="auth-btn" id="auth-btn" onclick="handleAuth()">Entrar</button>
       </div>
     </div>
-    <div class="sb-section">Mis Crates</div>
+    <div class="sb-section">Crates del servidor</div>
     <div class="crate-list" id="crate-list">
       <div style="padding:12px;font-size:12px;color:var(--text3)">Cargando…</div>
     </div>
     <button class="btn-new-crate" onclick="openNewCrateModal()">+ Nueva crate</button>
-    <div class="sb-foot" id="sb-foot">Iniciá sesión para sincronizar</div>
+    <div class="sb-foot" id="sb-foot">Datos compartidos globalmente</div>
   </aside>
 
   <main class="main" id="main">
@@ -238,7 +237,7 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
 <div class="overlay" id="modal-auth" onclick="closeModalIf(event,'modal-auth')">
   <div class="modal">
     <h3>Sincronizar datos</h3>
-    <p>Iniciá sesión para guardar tus crates en la nube y acceder desde cualquier dispositivo.</p>
+    <p>Iniciá sesión para identificarte. Las crates son globales y compartidas con todos.</p>
     <button class="google-btn" onclick="loginGoogle()">
       <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Continuar con Google
@@ -250,31 +249,6 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
       <button class="btn" onclick="closeModal('modal-auth')">Cancelar</button>
       <button class="btn" onclick="loginEmail()">Entrar</button>
       <button class="btn btn-primary" onclick="registerEmail()">Registrarse</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal importar -->
-<div class="overlay" id="modal-import" onclick="closeModalIf(event,'modal-import')">
-  <div class="modal" style="width:460px">
-    <h3>Importar crate</h3>
-    <p>Pegá el contenido de un archivo <strong>.json</strong> o <strong>.yml</strong>, o subí el archivo directamente.</p>
-    <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn" id="imp-btn-json" onclick="setImportMode('json')" style="flex:1">JSON</button>
-      <button class="btn btn-primary" id="imp-btn-yml" onclick="setImportMode('yml')" style="flex:1">YML</button>
-    </div>
-    <div id="imp-file-row" style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
-      <label style="font-size:12px;color:var(--text3);cursor:pointer;padding:6px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);white-space:nowrap">
-        📂 Subir archivo
-        <input type="file" id="imp-file" accept=".json,.yml,.yaml" style="display:none" onchange="loadImportFile(this)" />
-      </label>
-      <span id="imp-file-name" style="font-size:12px;color:var(--text3)">Ningún archivo elegido</span>
-    </div>
-    <textarea id="imp-textarea" rows="9" placeholder="Pegá el contenido aquí…" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px;outline:none;resize:vertical;margin-bottom:10px;transition:border-color .15s;line-height:1.6"></textarea>
-    <div id="imp-mode-hint" style="font-size:11px;color:var(--text3);margin-bottom:12px"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-import')">Cancelar</button>
-      <button class="btn btn-primary" onclick="doImport()">Importar</button>
     </div>
   </div>
 </div>
@@ -343,15 +317,12 @@ function totalW(c) { return (c.items||[]).reduce((s,i) => s+(Number(i.weight)||0
 function activeCrate() { return crates.find(c => c.id === activeId); }
 
 // ── AUTH ───────────────────────────────────────
+// Suscripción global arranca inmediatamente, sin necesitar login
+subscribeToFirestore();
+
 onAuthStateChanged(auth, user => {
   currentUser = user;
   updateAuthUI();
-  if (user) {
-    subscribeToFirestore(user.uid);
-  } else {
-    if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
-    loadLocalFallback();
-  }
 });
 
 function updateAuthUI() {
@@ -375,11 +346,11 @@ function updateAuthUI() {
     name.textContent = 'Sin cuenta';
     btn.textContent  = 'Entrar';
     btn.className    = 'auth-btn';
-    badge.textContent = 'local';
-    badge.style.background = '';
-    badge.style.color = '';
-    badge.style.borderColor = '';
-    foot.textContent = 'Guardado local (sin cuenta)';
+    badge.textContent = 'global';
+    badge.style.background = 'rgba(79,123,255,.15)';
+    badge.style.color = '#4f7bff';
+    badge.style.borderColor = 'rgba(79,123,255,.35)';
+    foot.textContent = 'Datos compartidos globalmente';
   }
 }
 
@@ -414,9 +385,9 @@ function registerEmail() {
 }
 
 // ── FIRESTORE ──────────────────────────────────
-function cratesCol(uid) { return collection(db, 'users', uid, 'crates'); }
+function cratesCol() { return collection(db, 'crates'); }
 
-function subscribeToFirestore(uid) {
+function subscribeToFirestore() {
   if (unsubSnapshot) unsubSnapshot();
   const q = query(cratesCol(uid), orderBy('createdAt'));
   $('auth-dot').className = 'auth-dot syncing';
@@ -435,8 +406,7 @@ function subscribeToFirestore(uid) {
 }
 
 async function saveCrate(crate) {
-  if (!currentUser) { saveLocal(); return; }
-  const ref = doc(cratesCol(currentUser.uid), crate.id);
+  const ref = doc(cratesCol(), crate.id);
   $('sync-badge').textContent = '…';
   try {
     await setDoc(ref, { ...crate, updatedAt: serverTimestamp() });
@@ -448,9 +418,8 @@ async function saveCrate(crate) {
 }
 
 async function deleteCrateFS(id) {
-  if (!currentUser) { saveLocal(); return; }
   try {
-    await deleteDoc(doc(cratesCol(currentUser.uid), id));
+    await deleteDoc(doc(cratesCol(), id));
   } catch(e) { toast('Error al eliminar', 'err'); }
 }
 
@@ -588,10 +557,8 @@ function renderMain() {
       <input class="crate-name-editable" id="cname" value="${(c.name||'').replace(/"/g,'&quot;')}" placeholder="Nombre de la crate" />
     </div>
     <div class="header-actions">
-      <button class="btn" onclick="exportYML()">↓ .yml</button>
+      <button class="btn" onclick="exportYML()">Exportar .yml</button>
       <button class="btn" onclick="copyYML()">Copiar .yml</button>
-      <button class="btn" onclick="exportJSON()">↓ .json</button>
-      <button class="btn" onclick="openImportModal()">↑ Importar</button>
       <button class="btn btn-danger" onclick="deleteCrateById(null,'${c.id}')">Eliminar crate</button>
     </div>
   </div>
@@ -749,7 +716,6 @@ function deleteCrateById(e, id) {
   crates = crates.filter(x => x.id !== id);
   if (activeId === id) activeId = crates[0]?.id || null;
   deleteCrateFS(id);
-  if (!currentUser) saveLocal();
   renderSidebar();
   renderMain();
   toast('Crate eliminada', 'ok');
@@ -794,182 +760,6 @@ function copyYML() {
   });
 }
 
-// ── EXPORT JSON ──────────────────────────────────
-function exportJSON() {
-  const c = activeCrate();
-  if (!c) return;
-  const data = JSON.stringify(c, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${(c.name || 'crate').replace(/\s/g, '_').toLowerCase()}.json`;
-  a.click();
-  toast('JSON descargado ✓', 'ok');
-}
-
-// ── IMPORT MODAL ──────────────────────────────────
-let importMode = 'yml'; // 'json' | 'yml'
-
-function openImportModal() {
-  $('imp-textarea').value = '';
-  $('imp-file-name').textContent = 'Ningún archivo elegido';
-  $('imp-file').value = '';
-  setImportMode('yml');
-  openModal('modal-import');
-}
-
-function setImportMode(mode) {
-  importMode = mode;
-  const hints = {
-    json: 'Formato: JSON exportado por esta app (incluye nombre, color, items, etc.)',
-    yml:  'Formato: bloque "contents:" de ExcellentCrates. Se infiere la categoría por el nombre.'
-  };
-  $('imp-mode-hint').textContent = hints[mode];
-  $('imp-btn-json').className = mode === 'json' ? 'btn btn-primary' : 'btn';
-  $('imp-btn-yml').className  = mode === 'yml'  ? 'btn btn-primary' : 'btn';
-  $('imp-textarea').placeholder = mode === 'json'
-    ? '{\n  "name": "Mi Crate",\n  "items": [...]\n}'
-    : 'contents:\n\n  dinero_1m:\n    weight: 4500\n\n  token_500:\n    weight: 2800';
-}
-
-function loadImportFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  $('imp-file-name').textContent = file.name;
-  // auto-detect mode by extension
-  if (file.name.endsWith('.json')) setImportMode('json');
-  else if (file.name.endsWith('.yml') || file.name.endsWith('.yaml')) setImportMode('yml');
-  const reader = new FileReader();
-  reader.onload = e => { $('imp-textarea').value = e.target.result; };
-  reader.readAsText(file);
-}
-
-function doImport() {
-  const raw = $('imp-textarea').value.trim();
-  if (!raw) { toast('Pegá o cargá contenido primero', 'err'); return; }
-
-  let importedCrates = []; // array de objetos crate
-
-  if (importMode === 'json') {
-    try {
-      const parsed = JSON.parse(raw);
-      // puede ser un objeto crate único o un array de crates
-      const arr = Array.isArray(parsed) ? parsed : [parsed];
-      for (const obj of arr) {
-        if (!obj || typeof obj !== 'object') continue;
-        const items = Array.isArray(obj.items) ? obj.items.map(it => ({
-          id: uid(),
-          cat: it.cat || 'OTRO',
-          name: it.name || 'Item',
-          weight: Number(it.weight) || 0
-        })) : [];
-        importedCrates.push({
-          id: uid(),
-          name: obj.name || 'Crate importada',
-          color: obj.color || PALETTE[crates.length % PALETTE.length],
-          simTarget: Number(obj.simTarget) || 0.003,
-          createdAt: Date.now(),
-          items
-        });
-      }
-    } catch(e) {
-      toast('JSON inválido: ' + e.message, 'err'); return;
-    }
-
-  } else {
-    // Parsear YML (formato ExcellentCrates: contents:\n  key:\n    weight: N)
-    try {
-      const newCrate = parseImportYML(raw);
-      if (!newCrate) { toast('No se encontró "contents:" en el YML', 'err'); return; }
-      importedCrates.push(newCrate);
-    } catch(e) {
-      toast('Error al parsear YML: ' + e.message, 'err'); return;
-    }
-  }
-
-  if (importedCrates.length === 0) { toast('No se encontraron crates válidas', 'err'); return; }
-
-  // Agregar al estado
-  importedCrates.forEach(nc => {
-    crates.push(nc);
-    saveCrate(nc);
-  });
-  if (!currentUser) saveLocal();
-  activeId = importedCrates[0].id;
-  closeModal('modal-import');
-  renderSidebar();
-  renderMain();
-  const total = importedCrates.reduce((s, c) => s + (c.items?.length || 0), 0);
-  toast(`${importedCrates.length > 1 ? importedCrates.length + ' crates' : `"${importedCrates[0].name}"`} importada${importedCrates.length>1?'s':''} — ${total} items ✓`, 'ok');
-}
-
-function parseImportYML(raw) {
-  // Encuentra bloque contents:
-  const lines = raw.split('\n');
-  let inContents = false;
-  const items = [];
-  let currentKey = null;
-  let crateName = null;
-
-  // intentar obtener nombre del comentario # NombreCrate — ExcellentCrates
-  const commentMatch = raw.match(/^#\s*(.+?)\s*(?:—|-|–)?\s*(?:ExcellentCrates)?/m);
-  if (commentMatch) {
-    const candidate = commentMatch[1].trim();
-    if (!candidate.startsWith('Peso') && !candidate.startsWith('Items') && !candidate.startsWith('Weight')) {
-      crateName = candidate;
-    }
-  }
-
-  for (let line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-
-    if (!inContents) {
-      if (trimmed === 'contents:') { inContents = true; }
-      continue;
-    }
-
-    // Detectar item key (2 spaces indent, ends with :)
-    const keyMatch = line.match(/^  ([^\s#:][^:]*):?\s*(?:#.*)?$/);
-    if (keyMatch && !line.match(/^\s{4}/)) {
-      currentKey = keyMatch[1].trim().replace(/_/g, ' ');
-      // Intentar inferir categoría por palabras clave en el nombre
-      const cat = inferCat(currentKey);
-      items.push({ id: uid(), cat, name: currentKey, weight: 0 });
-      continue;
-    }
-
-    // Detectar weight: N (4 spaces indent)
-    const weightMatch = line.match(/^\s{4}weight:\s*(\d+(?:\.\d+)?)/);
-    if (weightMatch && items.length > 0) {
-      items[items.length - 1].weight = Number(weightMatch[1]);
-    }
-  }
-
-  if (items.length === 0) return null;
-  return {
-    id: uid(),
-    name: crateName || 'Crate importada',
-    color: PALETTE[crates.length % PALETTE.length],
-    simTarget: 0.003,
-    createdAt: Date.now(),
-    items
-  };
-}
-
-function inferCat(name) {
-  const n = name.toLowerCase();
-  if (/diner|pesos|\$|money|coin/.test(n))         return 'DINERO';
-  if (/token|point|punto/.test(n))                 return 'TOKENS';
-  if (/llave|key/.test(n))                         return 'LLAVES';
-  if (/armadura|casco|pecho|pechera|botas|pantal|armor|helmet|chest|legg|boot/.test(n)) return 'ARMADURA';
-  if (/espada|hacha|arco|trident|sword|axe|bow|weapon|arma/.test(n)) return 'ARMAS';
-  if (/skin|cosmetic/.test(n))                     return 'SKINS';
-  if (/tag|pet|mascota/.test(n))                   return 'TAGS/PETS';
-  if (/extra|bonus|especial|emoji|color|chat|mochil|bag/.test(n)) return 'EXTRAS';
-  return 'OTRO';
-}
-
 // ── MODALS ──────────────────────────────────────
 function openModal(id)  { $(id).classList.add('vis'); }
 function closeModal(id) { $(id).classList.remove('vis'); }
@@ -987,7 +777,6 @@ function createCrateFromModal() {
   crates.push(newCrate);
   activeId = id;
   saveCrate(newCrate);
-  if (!currentUser) saveLocal();
   renderSidebar();
   renderMain();
   toast(`Crate "${name}" creada ✓`, 'ok');
@@ -998,7 +787,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeModal('modal-new');
     closeModal('modal-auth');
-    closeModal('modal-import');
   }
 });
 $('modal-name-input').addEventListener('keydown', e => { if(e.key==='Enter') createCrateFromModal(); });
@@ -1008,8 +796,7 @@ Object.assign(window, {
   handleAuth, loginGoogle, loginEmail, registerEmail,
   openNewCrateModal, closeModal, closeModalIf, createCrateFromModal,
   deleteCrateById, deleteItem, addItem, updateField, updateSimTarget,
-  exportYML, copyYML, exportJSON, openImportModal, setImportMode, loadImportFile, doImport,
-  openAuthModal
+  exportYML, copyYML, openAuthModal
 });
 </script>
 </body>
