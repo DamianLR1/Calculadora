@@ -645,9 +645,95 @@ function updateField(itemId, field, val) {
   if (!c) return;
   const it = (c.items||[]).find(i => i.id === itemId);
   if (!it) return;
+  
   it[field] = field === 'weight' ? (Number(val)||0) : val;
   debounceSave();
-  renderMain();
+  
+  // En vez de renderMain(), actualizamos solo los números visuales en vivo
+  if (field === 'weight') {
+    updateVisualsLive();
+  }
+}
+
+// 2. Agregá esta nueva función que recalcula la tabla sin borrar los inputs
+function updateVisualsLive() {
+  const c = activeCrate();
+  if (!c) return;
+
+  const total = totalW(c);
+  const items = c.items || [];
+  const maxW = Math.max(...items.map(i => Number(i.weight)||0), 1);
+  const top = items.reduce((a,b) => (Number(b.weight)||0) > (Number(a.weight)||0) ? b : a, {weight:0,name:'—'});
+  const topPct = total > 0 ? ((Number(top.weight)/total)*100) : 0;
+  
+  const simT = Number(c.simTarget) || 0;
+  const simIdeal = total > 0 && simT > 0 && simT < 1 ? (total * simT / (1 - simT)) : 0;
+  const simNewTotal = total + simIdeal;
+  const simReal = simNewTotal > 0 ? (simIdeal / simNewTotal * 100) : 0;
+
+  // Actualizar Tarjetas Superiores
+  const statsValues = document.querySelectorAll('.stat-value');
+  if (statsValues.length >= 5) {
+      statsValues[1].textContent = total.toLocaleString();
+      statsValues[3].textContent = top.name;
+      statsValues[4].textContent = formatProb(topPct) + '%';
+  }
+
+  // Actualizar filas de la tabla
+  items.forEach(it => {
+    const row = document.querySelector(`tr[data-iid="${it.id}"]`);
+    if (!row) return;
+
+    const p = total > 0 ? (Number(it.weight)/total*100) : 0;
+    const bw = Math.round(Number(it.weight)/maxW*100);
+    const ideal = total > 0 && simT > 0 && simT < 1 ? (total * simT / (1-simT)).toFixed(1) : '—';
+
+    const barFill = row.querySelector('.bar-fill');
+    const pctLabel = row.querySelector('.pct-label');
+    const idealLabel = row.querySelector('.ideal-label');
+
+    if (barFill) barFill.style.width = bw + '%';
+    // Usamos el formatProb() para igualar al plugin
+    if (pctLabel) pctLabel.textContent = formatProb(p) + '%';
+    if (idealLabel) idealLabel.textContent = ideal;
+  });
+
+  // Actualizar Footer (Totales)
+  const tfootMono = document.querySelectorAll('tfoot td.mono');
+  if (tfootMono.length > 0) {
+      tfootMono[0].textContent = total.toLocaleString();
+  }
+
+  // Actualizar Simulador Inferior
+  const simVals = document.querySelectorAll('.sim-rv');
+  if (simVals.length >= 4) {
+      simVals[0].textContent = total.toLocaleString();
+      simVals[1].textContent = simIdeal.toFixed(2);
+      simVals[2].textContent = simNewTotal.toFixed(1);
+      simVals[3].textContent = formatProb(simReal) + '%';
+  }
+  
+  // Actualizar el código YML en tiempo real
+  updateYMLPreviewLive(c, total, items);
+}
+
+// 3. Pequeña función para mantener el código YML sincronizado abajo
+function updateYMLPreviewLive(c, total, items) {
+  const ymlPre = document.getElementById('yml-pre');
+  if (!ymlPre) return;
+  
+  const grouped = {};
+  items.forEach(it => { if (!grouped[it.cat]) grouped[it.cat]=[]; grouped[it.cat].push(it); });
+  const ymlLines = Object.entries(grouped).map(([cat, its]) =>
+    `<span class="ya"># ${cat}</span>\n` +
+    its.map(it => {
+      const p = total > 0 ? (Number(it.weight)/total*100) : 0;
+      const k = (it.name||'item').replace(/[^\w\-]/g,'_');
+      return `  <span class="yk">${k}</span>:\n    <span class="yk">weight</span>: <span class="yv">${it.weight}</span>   <span class="yc"># ${formatProb(p)}%</span>`;
+    }).join('\n')
+  ).join('\n\n');
+
+  ymlPre.innerHTML = `<span class="yc"># ${c.name} — ExcellentCrates</span>\n<span class="yc"># Peso total: ${total.toLocaleString()} | Items: ${items.length}</span>\n\n<span class="yk">contents</span>:\n\n${ymlLines}`;
 }
 
 function deleteItem(itemId) {
