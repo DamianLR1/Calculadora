@@ -195,7 +195,6 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
   </main>
 </div>
 
-<!-- Modal nueva crate -->
 <div class="overlay" id="modal-new" onclick="closeModalIf(event,'modal-new')">
   <div class="modal">
     <h3>Nueva crate</h3>
@@ -208,7 +207,6 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
   </div>
 </div>
 
-<!-- Modal auth -->
 <div class="overlay" id="modal-auth" onclick="closeModalIf(event,'modal-auth')">
   <div class="modal">
     <h3>Identificarse</h3>
@@ -228,7 +226,6 @@ tfoot td.mono{font-family:var(--mono);color:var(--text)}
   </div>
 </div>
 
-<!-- Modal importar -->
 <div class="overlay" id="modal-import" onclick="closeModalIf(event,'modal-import')">
   <div class="modal" style="width:460px">
     <h3>Importar crate</h3>
@@ -310,10 +307,8 @@ function totalW(c) { return (c.items||[]).reduce((s,i) => s+(Number(i.weight)||0
 function activeCrate() { return crates.find(c => c.id === activeId); }
 function uid() { return crypto.randomUUID(); }
 
-// ── FIRESTORE GLOBAL ───────────────────────────
 function cratesCol() { return collection(db, 'crates'); }
 
-// Arranca sin login — todos ven las mismas crates
 subscribeToFirestore();
 
 function subscribeToFirestore() {
@@ -461,7 +456,6 @@ function defaultItems() {
   ];
 }
 
-// ── DEBOUNCED SAVE ──────────────────────────────
 function debounceSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
@@ -470,7 +464,6 @@ function debounceSave() {
   }, 800);
 }
 
-// ── RENDER SIDEBAR ──────────────────────────────
 function renderSidebar() {
   const list = $('crate-list');
   list.innerHTML = '';
@@ -492,7 +485,6 @@ function renderSidebar() {
   });
 }
 
-// ── RENDER MAIN ─────────────────────────────────
 function renderMain() {
   const main = $('main');
   const c = activeCrate();
@@ -639,7 +631,6 @@ function renderMain() {
   };
 }
 
-// ── ACTIONS ─────────────────────────────────────
 function updateField(itemId, field, val) {
   const c = activeCrate();
   if (!c) return;
@@ -649,13 +640,11 @@ function updateField(itemId, field, val) {
   it[field] = field === 'weight' ? (Number(val)||0) : val;
   debounceSave();
   
-  // En vez de renderMain(), actualizamos solo los números visuales en vivo
   if (field === 'weight') {
     updateVisualsLive();
   }
 }
 
-// 2. Agregá esta nueva función que recalcula la tabla sin borrar los inputs
 function updateVisualsLive() {
   const c = activeCrate();
   if (!c) return;
@@ -671,7 +660,6 @@ function updateVisualsLive() {
   const simNewTotal = total + simIdeal;
   const simReal = simNewTotal > 0 ? (simIdeal / simNewTotal * 100) : 0;
 
-  // Actualizar Tarjetas Superiores
   const statsValues = document.querySelectorAll('.stat-value');
   if (statsValues.length >= 5) {
       statsValues[1].textContent = total.toLocaleString();
@@ -679,7 +667,6 @@ function updateVisualsLive() {
       statsValues[4].textContent = formatProb(topPct) + '%';
   }
 
-  // Actualizar filas de la tabla
   items.forEach(it => {
     const row = document.querySelector(`tr[data-iid="${it.id}"]`);
     if (!row) return;
@@ -698,13 +685,11 @@ function updateVisualsLive() {
     if (idealLabel) idealLabel.textContent = ideal;
   });
 
-  // Actualizar Footer (Totales)
   const tfootMono = document.querySelectorAll('tfoot td.mono');
   if (tfootMono.length > 0) {
       tfootMono[0].textContent = total.toLocaleString();
   }
 
-  // Actualizar Simulador Inferior
   const simVals = document.querySelectorAll('.sim-rv');
   if (simVals.length >= 4) {
       simVals[0].textContent = total.toLocaleString();
@@ -713,11 +698,9 @@ function updateVisualsLive() {
       simVals[3].textContent = formatProb(simReal) + '%';
   }
   
-  // Actualizar el código YML en tiempo real
   updateYMLPreviewLive(c, total, items);
 }
 
-// 3. Pequeña función para mantener el código YML sincronizado abajo
 function updateYMLPreviewLive(c, total, items) {
   const ymlPre = document.getElementById('yml-pre');
   if (!ymlPre) return;
@@ -781,7 +764,6 @@ function deleteCrateById(e, id) {
   toast('Crate eliminada', 'ok');
 }
 
-// ── YML ─────────────────────────────────────────
 function getPlainYML() {
   const c = activeCrate();
   if (!c) return '';
@@ -821,7 +803,6 @@ function copyYML() {
   });
 }
 
-// ── EXPORT JSON ──────────────────────────────────
 function exportJSON() {
   const c = activeCrate();
   if (!c) return;
@@ -833,7 +814,6 @@ function exportJSON() {
   toast('JSON descargado ✓', 'ok');
 }
 
-// ── IMPORT ────────────────────────────────────────
 let importMode = 'yml';
 
 function openImportModal() {
